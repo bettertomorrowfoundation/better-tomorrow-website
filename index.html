@@ -5,19 +5,58 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta content="#173f35" name="theme-color"/>
-<meta content="Better Tomorrow Foundation expands access to devices, practical digital skills, and opportunity for displaced and marginalized communities." name="description"/>
-<title>Better Tomorrow Foundation | Technology Should Lift Everyone</title>
+<meta content="Better Tomorrow Foundation, based in Roanoke, Virginia, is preparing a Farchana, Chad pilot to expand digital access and practical skills for refugee and host-community learners." name="description"/>
+<title>Better Tomorrow Foundation | Digital Access &amp; Skills for Refugee Learners</title>
 <script>document.documentElement.classList.add('js');</script>
 <link href="favicon.png" rel="icon" type="image/png"/>
 <link href="https://www.bettertomorrowz.org/" rel="canonical"/>
 <link as="image" href="sudan_students.jpg" rel="preload"/>
-<meta content="Better Tomorrow Foundation" property="og:title"/>
-<meta content="Technology should lift everyone. Help expand digital access and practical skills for displaced and marginalized learners." property="og:description"/>
+<meta content="Better Tomorrow Foundation | Digital Access &amp; Skills for Refugee Learners" property="og:title"/>
+<meta content="Better Tomorrow Foundation, based in Roanoke, Virginia, is preparing a Farchana, Chad pilot to expand digital access and practical skills for refugee and host-community learners." property="og:description"/>
 <meta content="https://www.bettertomorrowz.org/social-preview.png" property="og:image"/>
 <meta content="website" property="og:type"/>
 <meta content="https://www.bettertomorrowz.org/" property="og:url"/>
 <meta content="summary_large_image" name="twitter:card"/>
 <meta content="https://www.bettertomorrowz.org/social-preview.png" name="twitter:image"/>
+<meta name="robots" content="index, follow"/>
+<meta property="og:site_name" content="Better Tomorrow Foundation"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:image:alt" content="Better Tomorrow Foundation — Technology should lift everyone."/>
+<meta name="twitter:title" content="Better Tomorrow Foundation | Digital Access &amp; Skills for Refugee Learners"/>
+<meta name="twitter:description" content="Better Tomorrow Foundation, based in Roanoke, Virginia, is preparing a Farchana, Chad pilot to expand digital access and practical skills for refugee and host-community learners."/>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://www.bettertomorrowz.org/#organization",
+      "name": "Better Tomorrow Foundation",
+      "url": "https://www.bettertomorrowz.org/",
+      "logo": "https://www.bettertomorrowz.org/favicon.png",
+      "description": "Better Tomorrow Foundation, based in Roanoke, Virginia, is preparing a Farchana, Chad pilot to expand digital access and practical skills for refugee and host-community learners.",
+      "email": "info@bettertomorrowz.org",
+      "slogan": "Technology should lift everyone.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Roanoke",
+        "addressRegion": "VA",
+        "addressCountry": "US"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://www.bettertomorrowz.org/#website",
+      "url": "https://www.bettertomorrowz.org/",
+      "name": "Better Tomorrow Foundation",
+      "publisher": {
+        "@id": "https://www.bettertomorrowz.org/#organization"
+      },
+      "inLanguage": "en-US"
+    }
+  ]
+}
+</script>
 <style>
     :root {
       --ink: #15211d;
@@ -897,7 +936,7 @@
         if (link.dataset.page === pageKey) link.setAttribute('aria-current','page');
         else link.removeAttribute('aria-current');
       });
-      document.title = `${titles[pageKey]} | Better Tomorrow Foundation`;
+      document.title = pageKey === 'home' ? "Better Tomorrow Foundation | Digital Access & Skills for Refugee Learners" : `${titles[pageKey]} | Better Tomorrow Foundation`;
       closeMenu();
       const isDeepLink = key && !topRoutes.has(key) && key !== 'top';
       const target = isDeepLink ? document.getElementById(key) : null;

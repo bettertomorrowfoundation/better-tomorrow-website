@@ -498,6 +498,17 @@
     @media (prefers-reduced-motion: reduce) { .site-page:not([hidden]) { animation: none; } }
 
 </style>
+<style>
+.analytics-panel { position:fixed; z-index:1000; bottom:16px; left:16px; right:16px; max-width:620px; margin:0 auto; padding:22px; border:1px solid var(--line); border-radius:18px; background:var(--paper); color:var(--ink); box-shadow:0 12px 48px #173f3540; font-size:15px; line-height:1.5; max-height:80vh; overflow:auto; }
+.analytics-panel[hidden] { display:none; }
+.analytics-panel h2 { font-size:20px; margin:0 0 8px; }
+.analytics-panel p { margin:8px 0; }
+.analytics-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+.analytics-actions button { flex:1 1 150px; padding:12px; border-radius:10px; border:1px solid var(--forest); font:inherit; font-weight:700; cursor:pointer; }
+#analytics-accept { background:var(--forest); color:white; }
+#analytics-decline { background:var(--paper); color:var(--forest); }
+.analytics-preferences { background:none; color:inherit; border:0; padding:0; text-decoration:underline; font:inherit; cursor:pointer; text-align:left; }
+</style>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
@@ -849,6 +860,7 @@
 <div class="footer-bottom">
 <span>© <span id="year">2026</span> Better Tomorrow Foundation</span>
 <span>Technology should lift everyone.</span>
+<button type="button" class="analytics-preferences" id="analytics-preferences" hidden>Privacy &amp; analytics</button>
 </div>
 </div>
 </footer>
@@ -1014,6 +1026,93 @@
     backToTop.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
     window.addEventListener('scroll', updateBackToTop, { passive: true });
     updateBackToTop();
+</script>
+<aside id="analytics-panel" class="analytics-panel" aria-label="Optional analytics privacy preferences" hidden>
+<h2>Help us improve our website</h2>
+<p>With your permission, we use Google Analytics to understand visits, navigation and interest in our programs. Google may use analytics cookies or similar identifiers and process device, approximate location and usage information. Analytics is optional; declining does not affect your access to the website.</p>
+<p>We do not send contact form names, email addresses or message contents as analytics events. Your contact form prepares an email on your device. You can change your selection at any time using Privacy &amp; analytics in the footer. See <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">how Google uses information</a>. Questions? <a href="mailto:info@bettertomorrowz.org">Contact us</a>.</p>
+<div class="analytics-actions"><button type="button" id="analytics-decline">Decline analytics</button><button type="button" id="analytics-accept">Allow analytics</button></div>
+</aside>
+<script>
+(() => {
+  'use strict';
+  const measurementId = 'G-TLND349VBG';
+  const key = 'btf-analytics-consent-v1';
+  const canonical = 'https://www.bettertomorrowz.org/';
+  const panel = document.getElementById('analytics-panel');
+  const preferences = document.getElementById('analytics-preferences');
+  let enabled = false, lastPage = '';
+  let choice = null;
+  try { choice = localStorage.getItem(key); } catch (_) {}
+  function store(value) { try { localStorage.setItem(key, value); } catch (_) {} }
+  const referrer = (() => { try { return new URL(document.referrer).origin + '/'; } catch (_) { return ''; } })();
+  function currentPage() {
+    const page = document.querySelector('.site-page:not([hidden])');
+    const route = page && page.dataset.page;
+    return ['home','programs','goals','history','contact','about','support'].includes(route) ? route : 'home';
+  }
+  function pageLocation(route) { return canonical + (route === 'home' ? '' : '#' + route); }
+  function trackPage() {
+    if (!enabled) return;
+    const route = currentPage();
+    if (route === lastPage) return;
+    const previous = lastPage ? pageLocation(lastPage) : referrer;
+    lastPage = route;
+    window.gtag('event', 'page_view', {
+      page_location: pageLocation(route), page_title: document.title,
+      page_referrer: previous, section: route
+    });
+  }
+  function enableAnalytics() {
+    if (enabled) return;
+    enabled = true;
+    window['ga-disable-' + measurementId] = false;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){ window.dataLayer.push(arguments); };
+    window.gtag('consent','default', {analytics_storage:'granted', ad_storage:'denied', ad_user_data:'denied', ad_personalization:'denied'});
+    window.gtag('js', new Date());
+    window.gtag('config', measurementId, {send_page_view:false, allow_google_signals:false, allow_ad_personalization_signals:false, page_location:pageLocation(currentPage()), page_referrer:referrer});
+    const tag = document.createElement('script');
+    tag.async = true;
+    tag.src = 'https://www.googletagmanager.com/gtag/js?id=' + measurementId;
+    document.head.appendChild(tag);
+    trackPage();
+  }
+  preferences.hidden = false;
+  preferences.addEventListener('click', () => { panel.hidden = false; document.getElementById('analytics-decline').focus(); });
+  document.getElementById('analytics-accept').addEventListener('click', () => { store('allow'); panel.hidden = true; enableAnalytics(); });
+  document.getElementById('analytics-decline').addEventListener('click', () => {
+    store('decline'); panel.hidden = true;
+    if (enabled) {
+      window['ga-disable-' + measurementId] = true;
+      enabled = false;
+      // Remove accessible first-party GA cookies, then reload without the tag.
+      document.cookie.split(';').forEach(part => {
+        const name = part.split('=')[0].trim();
+        if (/^_ga(?:_|$)/.test(name)) {
+          for (const domain of ['', '; domain=bettertomorrowz.org', '; domain=www.bettertomorrowz.org']) {
+            document.cookie = name + '=; Max-Age=0; path=/' + domain + '; Secure; SameSite=Lax';
+          }
+        }
+      });
+      location.reload();
+    }
+  });
+  window.addEventListener('hashchange', trackPage);
+  const contactCategories = { 'info':'general', 'adam.harane':'founder', 'donate':'donation', 'partners':'partnership', 'volunteer':'volunteering' };
+  document.addEventListener('click', event => {
+    if (!enabled) return;
+    const anchor = event.target.closest('a[href^="mailto:"]');
+    if (!anchor) return;
+    const address = anchor.getAttribute('href').slice(7).split('?')[0].toLowerCase();
+    const local = address.endsWith('@bettertomorrowz.org') ? address.split('@')[0] : '';
+    if (Object.hasOwn(contactCategories, local)) {
+      window.gtag('event','contact_interest', {contact_category:contactCategories[local], section:currentPage(), page_location:pageLocation(currentPage())});
+    }
+  });
+  if (choice === 'allow') enableAnalytics();
+  else if (choice !== 'decline') panel.hidden = false;
+})();
 </script>
 </body>
 </html>
